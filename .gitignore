@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+.venv
+venv/
+env/
+models/*.pkl
+models/*.gguf
+postgres_data/
+qdrant_data/
+.idea/
+.vscode/
+dist/
+build/
+*.egg-info/

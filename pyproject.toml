@@ -1,0 +1,40 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "documind"
+version = "0.1.0"
+description = "Bangla Legal AI - RAG System"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi>=0.110.0",
+    "uvicorn[standard]>=0.27.1",
+    "sqlalchemy>=2.0.27",
+    "alembic>=1.13.1",
+    "pydantic-settings>=2.2.1",
+    "python-multipart>=0.0.9",
+    "python-jose[cryptography]>=3.3.0",
+    "passlib[bcrypt]>=1.7.4",
+    "qdrant-client>=1.8.0",
+    "llama-cpp-python>=0.2.55",
+    "prometheus-client>=0.20.0",
+    "psycopg2-binary>=2.9.9",
+    "networkx>=3.2.1",
+    "sentence-transformers>=2.5.1",
+    "torch>=2.2.0"
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q"
+testpaths = [
+    "tests",
+]
+pythonpath = [
+    "src",
+]
