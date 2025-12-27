@@ -7,7 +7,7 @@ from src.data.schemas import UserCreate, User, Token
 from src.data.crud.user import create_user, get_user_by_email
 from src.api.dependencies import get_db
 from src.services.auth_service import create_access_token
-from src.config import settings
+from src.core.config import settings
 from passlib.context import CryptContext
 
 router = APIRouter()

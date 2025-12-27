@@ -1,18 +1,13 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from src.config import settings
+from src.core.config import settings
 from src.ml.loader import ml_models, ModelLoader
 # from src.api.v1.router import api_router # We will create this later
 import logging
 import time
 from prometheus_client import make_asgi_app, Counter, Histogram
 
-# Logging Configuration
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-)
-logger = logging.getLogger(__name__)
+from src.core.logging import logger
 
 # Prometheus Metrics
 REQUEST_COUNT = Counter("app_requests_total", "Total app requests", ["method", "endpoint", "http_status"])
@@ -60,9 +55,8 @@ class MetricsMiddleware(BaseHTTPMiddleware):
 
 app.add_middleware(MetricsMiddleware)
 
-@app.get("/health")
-def health_check():
-    return {"status": "ok", "app": settings.PROJECT_NAME}
+from src.app.routers import health
+app.include_router(health.router, tags=["health"])
 
 from src.api.v1.router import api_router
 app.include_router(api_router, prefix=settings.API_V1_STR)

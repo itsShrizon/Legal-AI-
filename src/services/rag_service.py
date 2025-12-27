@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from src.ml.rag_engine import LegalRAG
 from src.ml.loader import ml_models
-from src.config import settings
+from src.core.config import settings
 from qdrant_client import QdrantClient
 
 # Global Qdrant Client (reused)

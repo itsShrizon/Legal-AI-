@@ -4,7 +4,7 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 from src.data.db import SessionLocal
-from src.config import settings
+from src.core.config import settings
 from src.data.schemas import TokenData
 from src.data.crud.user import get_user_by_email
 

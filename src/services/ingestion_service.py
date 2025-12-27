@@ -6,7 +6,7 @@ from qdrant_client.http import models
 
 from src.data.models import LegalDocument, LegalChunk
 from src.ml.loader import ml_models
-from src.config import settings
+from src.core.config import settings
 
 # Global Qdrant Client
 qdrant = QdrantClient(url=settings.QDRANT_URL)
