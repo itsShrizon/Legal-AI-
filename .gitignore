@@ -14,3 +14,6 @@ qdrant_data/
 dist/
 build/
 *.egg-info/
+data/raw/*.jsonl
+data/raw/chunked_legal_documents_smart.jsonl
+data/raw/*.jsonl

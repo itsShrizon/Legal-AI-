@@ -1,5 +1,6 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import validator
+from typing import Optional
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "Bangla Legal AI"
@@ -7,6 +8,7 @@ class Settings(BaseSettings):
     
     DATABASE_URL: str
     QDRANT_URL: str
+    QDRANT_API_KEY: Optional[str] = None
     
     SECRET_KEY: str
     ALGORITHM: str = "HS256"

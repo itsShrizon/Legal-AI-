@@ -5,7 +5,7 @@ from src.core.config import settings
 from qdrant_client import QdrantClient
 
 # Global Qdrant Client (reused)
-qdrant = QdrantClient(url=settings.QDRANT_URL)
+qdrant = QdrantClient(url=settings.QDRANT_URL, api_key=settings.QDRANT_API_KEY)
 
 def ask_question(db: Session, query: str):
     # Ensure models are loaded

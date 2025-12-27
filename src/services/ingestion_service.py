@@ -9,7 +9,7 @@ from src.ml.loader import ml_models
 from src.core.config import settings
 
 # Global Qdrant Client
-qdrant = QdrantClient(url=settings.QDRANT_URL)
+qdrant = QdrantClient(url=settings.QDRANT_URL, api_key=settings.QDRANT_API_KEY)
 COLLECTION_NAME = "bangla_legal"
 
 class IngestionService:

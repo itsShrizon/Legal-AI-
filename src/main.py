@@ -16,16 +16,16 @@ REQUEST_LATENCY = Histogram("app_request_latency_seconds", "Request latency", ["
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # STARTUP
-    logger.info("🧠 Loading AI Models... (This takes time)")
+    logger.info(" Loading AI Models... (This takes time)")
     # Real loading logic
     ml_models["embedding"] = ModelLoader.load_embedding_model()
     ml_models["llm"] = ModelLoader.load_llm_model()
-    logger.info("✅ AI Models Loaded")
+    logger.info(" AI Models Loaded")
     
     yield
     
     # SHUTDOWN
-    logger.info("🛑 Unloading Models...")
+    logger.info(" Unloading Models...")
     ml_models.clear()
 
 app = FastAPI(
