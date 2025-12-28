@@ -30,12 +30,18 @@ class IngestionService:
         if not embedder:
             # Fallback for when running script directly without main.py lifespan
             from src.ml.embeddings import BanglaEmbedding
-            embedder = BanglaEmbedding()
+            embedder = BanglaEmbedding(model_path=settings.EMBEDDING_MODEL_PATH)
 
         points = []
         
+        from tqdm import tqdm
+        
+        # Count lines for progress bar (rough estimate or precise depending on needs, simple loop first)
+        num_lines = sum(1 for _ in open(file_path, 'r', encoding='utf-8'))
+        print(f"Detected {num_lines} chunks to ingest.")
+
         with open(file_path, "r", encoding="utf-8") as f:
-            for line in f:
+            for line in tqdm(f, total=num_lines, desc="Ingesting Chunks"):
                 data = json.loads(line)
                 
                 # A. Check/Create Document in SQL
@@ -73,10 +79,15 @@ class IngestionService:
                         "text": data['text'] 
                     }
                 ))
-        
-        # Batch Insert into Qdrant
+                
+                # Batch Insert Logic
+                if len(points) >= 100:
+                    qdrant.upsert(collection_name=COLLECTION_NAME, points=points)
+                    points = [] # Reset batch
+
+        # Insert remaining points
         if points:
             qdrant.upsert(collection_name=COLLECTION_NAME, points=points)
         
         db.commit()
-        return len(points)
+        return num_lines

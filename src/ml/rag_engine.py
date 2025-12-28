@@ -11,21 +11,24 @@ class LegalRAG:
     def search_and_answer(self, query: str):
         # 1. Vector Search
         query_vector = self.embedder.encode(query)
-        hits = self.qdrant.search(
+        # Use query_points for search (modern Qdrant API)
+        hits = self.qdrant.query_points(
             collection_name="bangla_legal",
-            query_vector=query_vector,
-            limit=3
-        )
+            query=query_vector,
+            limit=5
+        ).points
         
         # 2. Graph Expansion
         related_sections = set()
         context_texts = []
+        sources = set()
         
         for hit in hits:
             # Add the direct vector hit
             payload = hit.payload or {}
             if 'text' in payload:
-                context_texts.append(payload['text'])
+                source = payload.get('source_file', 'Unknown')
+                context_texts.append(f"Source: {source}\nContent: {payload['text']}")
             
             # Extract hierarchy tags (nodes)
             if 'hierarchy' in payload and payload['hierarchy']:
@@ -39,12 +42,28 @@ class LegalRAG:
             # We need to make sure the dialect supports it or use correct syntax
             # For simplicity in this scaffold, we'll try basic approach or assume postgres
             graph_hits = self.db.query(LegalChunk).filter(
-                LegalChunk.hierarchy.overlap(list(related_sections))
+                LegalChunk.hierarchy.op("&&")(list(related_sections))
             ).limit(5).all()
             
             for chunk in graph_hits:
-                context_texts.append(chunk.content)
+                # Access filename via relationship (lazy load might trigger here, implicit join preferred for perf but ok for now)
+                source = chunk.document.filename if chunk.document else "Unknown"
+                context_texts.append(f"Source: {source}\nContent: {chunk.content}")
         
         # 4. Generate Answer
-        final_context = "\n---\n".join(list(set(context_texts)))
+        print("\n" + "="*50)
+        print(f"🔍 RETRIEVAL DEBUG INFO for query: '{query}'")
+        print("="*50)
+        
+        unique_contexts = list(set(context_texts))
+        for i, ctx in enumerate(unique_contexts):
+            # context text format: "Source: ...\nContent: ..."
+            lines = ctx.split('\n')
+            source_line = lines[0] if lines else "Unknown Source"
+            content_snippet = lines[1][:100] + "..." if len(lines) > 1 else "No content"
+            print(f"[{i+1}] {source_line} | Snippet: {content_snippet}")
+            
+        print("="*50 + "\n")
+
+        final_context = "\n\n".join(unique_contexts)
         return self.llm.generate_response(final_context, query)

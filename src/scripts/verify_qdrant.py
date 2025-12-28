@@ -17,11 +17,16 @@ def verify_connection():
     try:
         client = QdrantClient(url=settings.QDRANT_URL, api_key=settings.QDRANT_API_KEY)
         collections = client.get_collections()
-        print(f"✅ Connected! Found {len(collections.collections)} collections.")
+        print(f" Connected! Found {len(collections.collections)} collections.")
         for col in collections.collections:
             print(f" - {col.name}")
+            try:
+                count = client.count(collection_name=col.name)
+                print(f"   Points: {count.count}")
+            except:
+                pass
     except Exception as e:
-        print(f"❌ Connection failed: {e}")
+        print(f" Connection failed: {e}")
 
 if __name__ == "__main__":
     verify_connection()

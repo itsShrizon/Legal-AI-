@@ -8,7 +8,7 @@ import sys
 # Add project root to path
 sys.path.append(os.getcwd())
 
-from src.config import settings
+from src.core.config import settings
 from src.data.models import Base
 
 config = context.config
